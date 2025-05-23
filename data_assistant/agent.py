@@ -21,32 +21,36 @@ from google.adk.agents.callback_context import CallbackContext
 from google.genai import types
 
 from . import tools
-from .prompts import prompt_query_only, prompt_query_metadata
+from .prompts import build_prompt
 from .utils import get_env_var
 
 from dotenv import load_dotenv
 load_dotenv()
 
-metadata_mode = get_env_var("BQ_METADATA_MODE")
 
+metadata_mode = get_env_var("METADATA_MODE")
 logging.info(F"Metadata Mode: {metadata_mode}")
 
+output_mode = get_env_var("OUTPUT_MODE")
+logging.info(F"Output Mode: {output_mode}")
+
+
+# Build the prompt instructions based on the modes selected
+prompt_instructions = build_prompt(metadata_mode, output_mode)
+
+# Selecting the tools based on metadata mode 
+# This reinforce the Agent not use the metadata_description when metadata is disabled
 if metadata_mode == "ON":
-
-    INSTRUCTIONS = prompt_query_metadata()
-    TOOLS = [ 
-        tools.get_metadata_description,
-        tools.bq_nl2sql,
-        tools.run_bigquery_validation,
-    ]
+    TOOLS = [
+        tools.get_metadata_description, 
+        tools.bq_nl2sql, 
+        tools.run_bigquery_validation
+        ]
 else: 
-    
-    INSTRUCTIONS = prompt_query_only()
-    TOOLS = [ 
+    TOOLS = [
         tools.bq_nl2sql,
-        tools.run_bigquery_validation,
-    ]
-
+        tools.run_bigquery_validation
+        ]
 
 def setup_before_agent_call(callback_context: CallbackContext) -> None:
     """Setup the agent."""
@@ -55,11 +59,10 @@ def setup_before_agent_call(callback_context: CallbackContext) -> None:
         callback_context.state["database_settings"] = \
             tools.get_database_settings() 
 
-
 root_agent = Agent(
-    model=get_env_var("BQ_ROOT_MODEL"),
+    model=get_env_var("AGENT_ROOT_MODEL"),
     name="bq_data_assistant",    
-    instruction=INSTRUCTIONS,
+    instruction=prompt_instructions,
     tools=TOOLS,
     before_agent_callback=setup_before_agent_call,
     generate_content_config=types.GenerateContentConfig(temperature=0.01),

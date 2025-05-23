@@ -24,24 +24,22 @@ from google.cloud import bigquery
 from google.genai import Client
 
 
-# Assume that `BQ_PROJECT_ID` is set in the environment. See the
-# `data_agent` README for more details.
-project = get_env_var("BQ_PROJECT_ID")
-location = get_env_var("GOOGLE_CLOUD_LOCATION_AGENT")
-llm_client = Client(vertexai=True, project=project, location=location)
+project_id = get_env_var("GOOGLE_CLOUD_PROJECT")
+location = get_env_var("GOOGLE_CLOUD_LOCATION")
+dataset_id = get_env_var("BQ_DATASET_ID")
+
+llm_client = Client(vertexai=True, project=project_id, location=location)
 
 MAX_NUM_ROWS = 80
 
-
 database_settings = None
 bq_client = None
-
 
 def get_bq_client():
     """Get BigQuery client."""
     global bq_client
     if bq_client is None:
-        bq_client = bigquery.Client(project=get_env_var("BQ_PROJECT_ID"))
+        bq_client = bigquery.Client(project=project_id)
     return bq_client
 
 
@@ -57,13 +55,13 @@ def update_database_settings():
     """Update database settings."""
     global database_settings
     ddl_schema = get_bigquery_schema(
-        get_env_var("BQ_DATASET_ID"),
+        dataset_id,
         client=get_bq_client(),
-        project_id=get_env_var("BQ_PROJECT_ID"),
+        project_id=project_id,
     )
     database_settings = {
-        "bq_project_id": get_env_var("BQ_PROJECT_ID"),
-        "bq_dataset_id": get_env_var("BQ_DATASET_ID"),
+        "bq_project_id": project_id,
+        "bq_dataset_id": dataset_id,
         "bq_ddl_schema": ddl_schema
     }
     return database_settings
@@ -182,7 +180,7 @@ def get_metadata_description(
 
     # Consider using a specific model tuned for instruction following or QA if available,
     # otherwise, the NL2SQL model might also work if it's a general foundation model.
-    model_to_use = get_env_var("BQ_TOOL_MODEL")
+    model_to_use = get_env_var("AGENT_TOOL_MODEL")
     if not model_to_use:
         # Fallback or error if no model is defined
         return "Error: Model for metadata description not configured."
@@ -260,7 +258,7 @@ def bq_nl2sql(
     )
 
     response = llm_client.models.generate_content(
-        model=get_env_var("BQ_TOOL_MODEL"),
+        model=get_env_var("AGENT_TOOL_MODEL"),
         contents=prompt,
         config={"temperature": 0.1},
     )
