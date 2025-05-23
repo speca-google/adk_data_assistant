@@ -24,7 +24,7 @@ from google.cloud import bigquery
 from google.genai import Client
 
 
-project_id = get_env_var("GOOGLE_CLOUD_PROJECT")
+project_id = get_env_var("BQ_PROJECT_ID")
 location = get_env_var("GOOGLE_CLOUD_LOCATION")
 dataset_id = get_env_var("BQ_DATASET_ID")
 
