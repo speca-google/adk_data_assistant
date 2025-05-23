@@ -30,11 +30,8 @@ def prompt_query_only() -> str:
         1. First, use `bq_nl2sql` tool to generate initial SQL from the question.
         2. You should also validate the SQL you have created for syntax and function errors (Use run_bigquery_validation tool). If there are any errors, you should go back and address the error in the SQL. Recreate the SQL based by addressing the error.
         
-        4. Generate the final result in JSON format with four keys: "explain", "sql", "sql_results", "nl_results".
-            "explain": "write out step-by-step reasoning to explain how you are generating the query based on the schema, example, and question.",
-            "sql": "Output your generated SQL!",
-            "sql_results": "raw sql execution query_result from run_bigquery_validation if it's available, otherwise None",
-            "nl_results": "Natural language about results, otherwise it's None if generated SQL is invalid"
+        4. Present the results in a sintetic way without any reference from tables and schemas
+
         ```
         You should pass one tool call to another tool call as needed!
 
@@ -79,21 +76,8 @@ def prompt_query_metadata() -> str:
               iii. Repeat step 3b (validation). Iterate a maximum of 2-3 times to fix SQL. If it still fails, report the last error.
           d. Once a valid SQL is generated (and optionally executed by `run_bigquery_validation` if it returns results directly), proceed to step 4.
 
-      4.  **Generate the final result in JSON format with four keys: "explain", "sql", "sql_results", "final_answer".**
-          * **"explain"**: (string) Provide a step-by-step reasoning.
-              * For Data Retrieval: Explain how you identified the tables/columns, any joins, filters, and how the SQL was constructed and validated.
-              * For Metadata: Explain how you analyzed the schema and used table/column names and descriptions to answer the question about data location/structure.
-          * **"sql"**: (string or null)
-              * For Data Retrieval: The final, validated SQL query.
-              * For Metadata: `null`.
-          * **"sql_results"**: (object/array or null)
-              * For Data Retrieval: The raw query_result from `run_bigquery_validation` if the query was valid and executed successfully (even if it returned no rows).
-              * For Metadata: `null`.
-          * **"final_answer"**: (string or null)
-              * ALLWAYS in Portuguese (BR)
-              * For Data Retrieval (successful query): A natural language summary of the SQL results or a statement if no data was found (e.g., "The query ran successfully and found 15 customers.").
-              * For Data Retrieval (failed query): A natural language statement about the SQL error (e.g., "The SQL query is invalid due to a syntax error near 'SELECT'.").
-              * For Metadata: The natural language answer from `get_metadata_description` (e.g., "User email addresses can be found in the `users` table, specifically in the `email_address` column which is described as 'The primary email for the user'.").
+        4. Generate the final result explaining out step-by-step reasoning to explain how you got the results and present the final results.
+        
 
       You should pass outputs from one tool call as inputs to subsequent tool calls as needed, following the workflow.
 

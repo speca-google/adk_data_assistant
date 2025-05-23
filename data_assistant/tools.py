@@ -27,7 +27,7 @@ from google.genai import Client
 # Assume that `BQ_PROJECT_ID` is set in the environment. See the
 # `data_agent` README for more details.
 project = get_env_var("BQ_PROJECT_ID")
-location = get_env_var("GOOGLE_CLOUD_LOCATION")
+location = get_env_var("GOOGLE_CLOUD_LOCATION_AGENT")
 llm_client = Client(vertexai=True, project=project, location=location)
 
 MAX_NUM_ROWS = 80
