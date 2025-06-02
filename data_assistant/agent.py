@@ -15,6 +15,8 @@
 """BQ Data Assistant: get data from database (BigQuery) using NL2SQL."""
 
 import logging
+import yaml
+from pathlib import Path
 
 from google.adk.agents import Agent
 from google.adk.agents.callback_context import CallbackContext
@@ -24,14 +26,22 @@ from . import tools
 from .prompts import build_prompt
 from .utils import get_env_var
 
+# Env Variables
 from dotenv import load_dotenv
 load_dotenv()
 
+# Load agent config
+script_dir = Path(__file__).parent.absolute()
+config_path = script_dir / 'config.yaml'
 
-metadata_mode = get_env_var("METADATA_MODE")
+with open(config_path, 'r') as f:
+    config = yaml.safe_load(f)
+
+# Print settings 
+metadata_mode = config['settings']['metadata_mode']
 logging.info(F"Metadata Mode: {metadata_mode}")
 
-output_mode = get_env_var("OUTPUT_MODE")
+output_mode = config['settings']['output_mode']
 logging.info(F"Output Mode: {output_mode}")
 
 
@@ -61,7 +71,7 @@ def setup_before_agent_call(callback_context: CallbackContext) -> None:
 
 root_agent = Agent(
     model=get_env_var("AGENT_ROOT_MODEL"),
-    name="bq_data_assistant",    
+    name=config['agent_name'],    
     instruction=prompt_instructions,
     tools=TOOLS,
     before_agent_callback=setup_before_agent_call,

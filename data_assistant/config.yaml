@@ -1,0 +1,24 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+agent_name: 'data_assistant'
+agent_display_name: 'Data Assistant'
+agent_description: 'Useful data assistant to perform NL2SQL and answer metadata questions'
+
+settings:
+  metadata_mode: 'ON' # "ON" for include Metadata answering mode or "OFF" for query only 
+  output_mode: 'SIMPLE' # "DETAILED" for return a json with four keys explaining the reasoning, sql_query, sql_results and answer. or "SIMPLE" for simple answer
+
+deploy:
+  dependencies: ['google-cloud-aiplatform[agent_engines]', 'google-adk', 'cloudpickle', 'pydantic', 'google-cloud-bigquery', 'pandas', 'db-dtypes', 'pyyaml']

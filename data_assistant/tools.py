@@ -25,10 +25,9 @@ from google.genai import Client
 
 
 project_id = get_env_var("BQ_PROJECT_ID")
-location = get_env_var("GOOGLE_CLOUD_LOCATION")
 dataset_id = get_env_var("BQ_DATASET_ID")
 
-llm_client = Client(vertexai=True, project=project_id, location=location)
+llm_client = Client(vertexai=True, project=project_id)
 
 MAX_NUM_ROWS = 80
 
