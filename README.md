@@ -84,14 +84,20 @@ AGENT_TOOL_MODEL=""  # Model as "gemini-2.0-flash"
 
 ## Running Locally
 
-Try runinng local: 
+Try runinng local using adk web: 
+```shell
+adk web
+```
 
-
-autentication: 
+Autentication: if ask for authentication run: 
+```shell
 gcloud auth application-default login
-
+```
 Obs.: This will running trhough your gcloud auth login user
 
 
-## Deploy on Agent Engine and Agent Engine
 
+## Deploy on Agent Engine and Agentspace
+
+To deploy this Agent on Agent Engine and Agentspace, follow this notebook: 
+[deploy_agent.ipynb](deploy_agent.ipynb)

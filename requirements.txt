@@ -1,4 +1,8 @@
-google-adk
+google-cloud-aiplatform[agent_engines]
+google-adk==0.5.0
+cloudpickle
+pydantic
+google-cloud-bigquery
 pandas
 db-dtypes
-cloudpickle
+ipykernel
